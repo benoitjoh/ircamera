@@ -1,8 +1,9 @@
-#!/usr/bin/bash
+#!/bin/bash
 
 # install motion
-sudo apt install motion
-
+sudo apt -y install motion htop
+sudo cp conf/motion.conf /etc/motion
+ 
 # install the lichtcontrols
 cp source/lightcontrol.py ~/
 sudo cp conf/lightcontrol.service /etc/systemd/system
