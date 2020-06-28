@@ -5,7 +5,7 @@ import time
 import os
 
 MOTIONSTATEFILE = '/tmp/motionevent'
-LIMIT = 350 
+LIMIT = 2350 
 HYSTERESIS = 50
 
 GPIO.setmode(GPIO.BOARD)
@@ -41,9 +41,9 @@ def rc_time (pin_to_circuit):
     GPIO.setup(pin_to_circuit, GPIO.IN)
 
     #Count until the pin returns to high again
-    while (GPIO.input(pin_to_circuit) == GPIO.LOW and count < LIMIT):
+    while (GPIO.input(pin_to_circuit) == GPIO.LOW and count < LIMIT +  100):
         count += 1
-        time.sleep(0.01)
+    #    time.sleep(0.01)
     return count
 
 state = 'BRIGHT'
@@ -53,16 +53,14 @@ state = 'BRIGHT'
 # if dark enough turn on light.
 
 
-state = state_old = 'BRIGHT'
-is_event = is_event_old = False
+state = 'BRIGHT'
 
 try:
     # Main loop
     while True:
 
-        is_event = os.path.exists(MOTIONSTATEFILE)
         value = rc_time(pin_ldr)
-        print value, state, is_event
+        print value, state
  
         if value >= LIMIT:
             state = 'DARK'
@@ -70,19 +68,14 @@ try:
             state = 'BRIGHT'
 
 
-        if state != state_old or is_event != is_event_old:
+        if 1:
             if state == 'DARK':
                 GPIO.output(pin_out_small, GPIO.HIGH)
-                if is_event:
-                    GPIO.output(pin_out_big, GPIO.HIGH)
-                else:
-                    GPIO.output(pin_out_big, GPIO.LOW)
+                GPIO.output(pin_out_big, GPIO.HIGH)
             else:
                 GPIO.output(pin_out_small, GPIO.LOW)
                 GPIO.output(pin_out_big, GPIO.LOW)
 
-        state_old = state
-        is_event_old = is_event
         time.sleep(1)
 
 
@@ -90,4 +83,6 @@ except KeyboardInterrupt:
     pass
 
 finally:
+    GPIO.output(pin_out_small, GPIO.LOW)
+    GPIO.output(pin_out_big, GPIO.LOW)
     GPIO.cleanup()
