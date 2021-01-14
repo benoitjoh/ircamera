@@ -61,7 +61,7 @@ try:
     while True:
 
         value = rc_time(pin_ldr)
-        print value, state
+        print (value, state)
  
         if value >= LIMIT:
             state = 'DARK'
