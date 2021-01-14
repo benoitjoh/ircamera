@@ -6,7 +6,7 @@ import os
 
 MOTIONSTATEFILE = '/tmp/motionevent'
 LIMIT = 2350 
-HYSTERESIS = 50
+HYSTERESIS =  200
 
 GPIO.setmode(GPIO.BOARD)
 
@@ -34,12 +34,13 @@ def rc_time (pin_to_circuit):
 
     #set pin to Output and set it to LOW 
     GPIO.setup(pin_to_circuit, GPIO.OUT)
+    time.sleep(0.1)
     GPIO.output(pin_to_circuit, GPIO.LOW)
     time.sleep(0.1)
 
     #Change the pin back to input
     GPIO.setup(pin_to_circuit, GPIO.IN)
-
+    
     #Count until the pin returns to high again
     while (GPIO.input(pin_to_circuit) == GPIO.LOW and count < LIMIT +  100):
         count += 1
@@ -76,7 +77,7 @@ try:
                 GPIO.output(pin_out_small, GPIO.LOW)
                 GPIO.output(pin_out_big, GPIO.LOW)
 
-        time.sleep(1)
+        time.sleep(2)
 
 
 except KeyboardInterrupt:
