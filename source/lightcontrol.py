@@ -1,12 +1,12 @@
-#!/usr/local/bin/python
+#!/usr/local/bin/python3
 
 import RPi.GPIO as GPIO
 import time
 import os
 
-MOTIONSTATEFILE = '/tmp/motionevent'
-LIMIT = 2350 
-HYSTERESIS = 50
+#Limit of the measurement that indicates the line between dark and bright
+LIMIT = 37000 
+HYSTERESIS =  2000
 
 GPIO.setmode(GPIO.BOARD)
 
@@ -28,23 +28,33 @@ while x<5:
     time.sleep(0.2)
     x += 1
 
+
 def rc_time (pin_to_circuit):
-    # this reads "analog" input from a digital pin
-    count = 0
+    """
+    this method reads "analog" input from a digital pin
+    the pin is set to low, and then it slowly returns high depending from 
+    status of the resistor
+    the recovery time is returned in microseconds
+    """
 
     #set pin to Output and set it to LOW 
     GPIO.setup(pin_to_circuit, GPIO.OUT)
-    GPIO.output(pin_to_circuit, GPIO.LOW)
     time.sleep(0.1)
+
+    start_ns = time.time_ns()
+    GPIO.output(pin_to_circuit, GPIO.LOW)
 
     #Change the pin back to input
     GPIO.setup(pin_to_circuit, GPIO.IN)
-
+    
     #Count until the pin returns to high again
-    while (GPIO.input(pin_to_circuit) == GPIO.LOW and count < LIMIT +  100):
-        count += 1
-    #    time.sleep(0.01)
-    return count
+    while (GPIO.input(pin_to_circuit) == GPIO.LOW ):
+        time.sleep(0.0001)
+     
+    end_ns = time.time_ns()
+    delta_ns = end_ns - start_ns
+    delta_mys = delta_ns // 1000
+    return delta_mys
 
 state = 'BRIGHT'
 
@@ -59,14 +69,14 @@ try:
     # Main loop
     while True:
 
-        value = rc_time(pin_ldr)
-        print value, state
+        delta_mys = rc_time(pin_ldr)
  
-        if value >= LIMIT:
+        if delta_mys >= LIMIT:
             state = 'DARK'
-        elif value < LIMIT - HYSTERESIS:
+        elif delta_mys < LIMIT - HYSTERESIS:
             state = 'BRIGHT'
 
+        print ("%imic  --> %s " % (delta_mys, state))
 
         if 1:
             if state == 'DARK':
