@@ -69,12 +69,7 @@ try:
     # Main loop
     while True:
 
-<<<<<<< HEAD
         delta_mys = rc_time(pin_ldr)
-=======
-        value = rc_time(pin_ldr)
-        print (value, state)
->>>>>>> 121a151f0c40ee8dd9c701da7c9486c2b68e7b5e
  
         if delta_mys >= LIMIT:
             state = 'DARK'
