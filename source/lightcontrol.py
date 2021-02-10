@@ -75,7 +75,7 @@ try:
             state = 'DARK'
         elif delta_mys < LIMIT - HYSTERESIS:
             state = 'BRIGHT'
-        msg = "%imic  --> %s " % (delta_mys, state)
+        msg = "%i mySec  --> %s " % (delta_mys, state)
         print (msg)
         open('/tmp/lightcontrol.txt', 'w').write(msg)
         if 1:
