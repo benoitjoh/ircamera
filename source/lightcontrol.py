@@ -5,7 +5,7 @@ import time
 import os
 
 #Limit of the measurement that indicates the line between dark and bright
-LIMIT = 37000 
+LIMIT = 26000 
 HYSTERESIS =  2000
 
 GPIO.setmode(GPIO.BOARD)
@@ -75,9 +75,9 @@ try:
             state = 'DARK'
         elif delta_mys < LIMIT - HYSTERESIS:
             state = 'BRIGHT'
-
-        print ("%imic  --> %s " % (delta_mys, state))
-
+        msg = "%imic  --> %s " % (delta_mys, state)
+        print (msg)
+        open('/tmp/lightcontrol.txt', 'w').write(msg)
         if 1:
             if state == 'DARK':
                 GPIO.output(pin_out_small, GPIO.HIGH)
